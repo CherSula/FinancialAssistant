@@ -10,5 +10,4 @@ namespace FinancialAssistant
     public partial class App : Application
     {
     }
-
 }

@@ -8,6 +8,8 @@
         Title="Financial Assistant"
         Height="500"
         Width="700"
+        Loaded="Window_Loaded"
+        d:DataContext="{d:DesignInstance local:MainWindowVm}"
 >
     <Grid x:Name="mainWindow">
         <Grid.RowDefinitions>
@@ -21,7 +23,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <StackPanel Margin="0,0,0,0" Grid.RowSpan="1" VerticalAlignment="Top">
-            <StackPanel Orientation="Horizontal" Width="330" HorizontalAlignment="Left" Height="40" >
+            <StackPanel Orientation="Horizontal" Width="555" HorizontalAlignment="Left" Height="40" >
                 <Button 
                     x:Name="button1"
                     Content="Загрузить исследования" 
@@ -30,13 +32,23 @@
                     HorizontalAlignment="Left" 
                     Click="btnLoadResearch_Click" 
                 />
-                <Label x:Name="label1" Content="путь до файла" Width="100" Height="20" RenderTransformOrigin="0.506,0.533" Padding="0,0,0,0"/>
+                <Label 
+                    Content="{Binding ResearchPath}"
+                    Width="365" 
+                    Height="20" 
+                    RenderTransformOrigin="0.506,0.533" 
+                    Padding="0,0,0,0"/>
             </StackPanel>
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Width="330" HorizontalAlignment="Left" Height="40" >
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Width="560" HorizontalAlignment="Left" Height="40" >
                 <Button x:Name="button2"
                     Content="Загрузить цены" Height="20" Width="170" Margin="10,10,10,0" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnLoadPrices_Click" 
                 />
-                <Label x:Name="label2" Content="путь до файла" Height="20" Width="100" Padding="0,0,0,0" Margin="0,10,0,0"/>
+                <Label 
+                    Content="{Binding PricesPath}"
+                    Height="20"
+                    Width="367"
+                    Padding="0,0,0,0"
+                    Margin="0,10,0,0"/>
             </StackPanel>
         </StackPanel>
         <Image x:Name="Logo" Grid.Row="0" Grid.Column="1" Width="80" HorizontalAlignment="Center" Margin="0,0,0,0" Source="/3logo.png" Grid.RowSpan="1" Height="80"/>
@@ -52,14 +64,65 @@
             HorizontalContentAlignment="Center" 
             Click="btnShowUniqueIndicators_Click"/>
         <Button 
-            x:Name="btnCalculateAnalysis" Grid.Row="2" Content="Рассчитать по исследованиям" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.487,0.536" Width="170" Height="20" Click="btnCalculateCost_Click"/>
-        <DataGrid 
-            x:Name="dataGridView1"
+            x:Name="btnCalculateAnalysis" 
+            Grid.Row="2" 
+            Content="Рассчитать по исследованиям" 
+            HorizontalAlignment="Left" 
+            Margin="10,10,0,0" 
+            VerticalAlignment="Top" 
+            RenderTransformOrigin="0.487,0.536" 
+            Width="170" 
+            Height="20" 
+            Click="btnCalculateCost_Click"
+        />
+        <DataGrid
+            ItemsSource="{Binding UniqueParameters}"
+            AutoGenerateColumns="False"
             Grid.Row="1"
             Margin="10,35,10,0"
-            Grid.ColumnSpan="2"
-            SelectionChanged="DataGrid_SelectionChanged"
-            CellEditEnding="DataGrid_CellEditEnding"/>
+            Grid.ColumnSpan="2">
+            <DataGrid.Columns>
+                <DataGridTextColumn 
+                    Header="Показатель" 
+                    Binding="{Binding Name}"
+                    IsReadOnly="True"
+                />
+                <DataGridTextColumn 
+                    Header="Количество" 
+                    Binding="{Binding Count}"
+                    IsReadOnly="True"
+                />
+                <DataGridTextColumn 
+                    Header="Коэффициент" 
+                    Binding="{Binding Coefficient}"
+                />
+                <DataGridTextColumn 
+                    Header="Цена за штуку" 
+                    Binding="{Binding EachExpend}"
+                    IsReadOnly="True"
+                />
+                <DataGridTextColumn 
+                    Header="Расходы" 
+                    Binding="{Binding TotalExpend}"
+                    IsReadOnly="True"
+                />
+                <DataGridTextColumn 
+                    Header="Цена для клиента" 
+                    Binding="{Binding EachCost}"
+                    IsReadOnly="True"
+                />
+                <DataGridTextColumn 
+                    Header="Цена для клиента всего" 
+                    Binding="{Binding TotalCost}"
+                    IsReadOnly="True"
+                />
+                <DataGridTextColumn 
+                    Header="Маржинальность" 
+                    Binding="{Binding TotalMargin}"
+                    IsReadOnly="True"
+                />
+            </DataGrid.Columns>
+        </DataGrid>
         <DataGrid x:Name="dataGridView2" Grid.Row="2" Grid.ColumnSpan="2" Margin="10,35,10,10" />
         <Button x:Name="btnTotal" Content="Итого за заказ" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="3" VerticalAlignment="Top" Width="170" Height="20" Click="btnTotalSumForOrder_Click"/>
         <DataGrid x:Name="dataGridView3" Grid.Row="3" Margin="10,35,10,10" Grid.ColumnSpan="2"/>
