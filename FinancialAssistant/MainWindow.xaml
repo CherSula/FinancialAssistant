@@ -80,11 +80,17 @@
             AutoGenerateColumns="False"
             Grid.Row="1"
             Margin="10,35,10,0"
-            Grid.ColumnSpan="2">
+            Grid.ColumnSpan="2"
+        >
             <DataGrid.Columns>
                 <DataGridTextColumn 
                     Header="Показатель" 
                     Binding="{Binding Name}"
+                    IsReadOnly="True"
+                />
+                <DataGridTextColumn 
+                    Header="Цена лаб/шт" 
+                    Binding="{Binding EachExpend}"
                     IsReadOnly="True"
                 />
                 <DataGridTextColumn 
@@ -97,18 +103,13 @@
                     Binding="{Binding Coefficient}"
                 />
                 <DataGridTextColumn 
-                    Header="Цена за штуку" 
-                    Binding="{Binding EachExpend}"
-                    IsReadOnly="True"
-                />
-                <DataGridTextColumn 
-                    Header="Расходы" 
-                    Binding="{Binding TotalExpend}"
-                    IsReadOnly="True"
-                />
-                <DataGridTextColumn 
-                    Header="Цена для клиента" 
+                    Header="Цена клиента/шт" 
                     Binding="{Binding EachCost}"
+                    IsReadOnly="True"
+                />
+                <DataGridTextColumn 
+                    Header="Расходы за показатель всего"
+                    Binding="{Binding TotalExpend}"
                     IsReadOnly="True"
                 />
                 <DataGridTextColumn 
@@ -123,7 +124,41 @@
                 />
             </DataGrid.Columns>
         </DataGrid>
-        <DataGrid x:Name="dataGridView2" Grid.Row="2" Grid.ColumnSpan="2" Margin="10,35,10,10" />
+        <DataGrid
+            ItemsSource="{Binding AnalysisData}"
+            AutoGenerateColumns="False"
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
+            Margin="10,35,10,10"
+        >
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    Header="Исследование" 
+                    Binding="{Binding Analysis}"
+                    IsReadOnly="True"
+                />
+                <DataGridTextColumn
+                    Header="Параметры" 
+                    Binding="{Binding Parameters}"
+                    IsReadOnly="True"
+                />
+                <DataGridTextColumn
+                    Header="Расходы" 
+                    Binding="{Binding Expend}"
+                    IsReadOnly="True"
+                />
+                <DataGridTextColumn
+                    Header="Стоимость исследования для клиента" 
+                    Binding="{Binding Cost}"
+                    IsReadOnly="True"
+                />
+                <DataGridTextColumn
+                    Header="Маржинальность" 
+                    Binding="{Binding Margin}"
+                    IsReadOnly="True"
+                />
+            </DataGrid.Columns>
+        </DataGrid>
         <Button x:Name="btnTotal" Content="Итого за заказ" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="3" VerticalAlignment="Top" Width="170" Height="20" Click="btnTotalSumForOrder_Click"/>
         <DataGrid x:Name="dataGridView3" Grid.Row="3" Margin="10,35,10,10" Grid.ColumnSpan="2"/>
 

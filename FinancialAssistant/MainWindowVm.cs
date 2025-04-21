@@ -50,21 +50,21 @@ public class MainWindowVm : INotifyPropertyChanged
 
     public ObservableCollection<AnalysisData> AnalysisData { get; set; }
 
-    public void Load()
+    public void DebugLoad()
     {
 #if DEBUG
         ReserchExcells();
         FillUniqueParameters();
+
+        void ReserchExcells()
+        {
+            ResearchPath = @"C:\Users\svetl\Desktop\Маша\sheet\analysis-parameter.xlsx";
+            PricesPath = @"C:\Users\svetl\Desktop\Маша\sheet\parameters_lab.cost.xlsx";
+
+            LoadResearch(ResearchPath);
+            LoadPrices(PricesPath);
+        }
 #endif
-    }
-
-    private void ReserchExcells()
-    {
-        ResearchPath = @"C:\Users\svetl\Desktop\Маша\sheet\analysis-parameter.xlsx";
-        PricesPath = @"C:\Users\svetl\Desktop\Маша\sheet\parameters_lab.cost.xlsx";
-
-        LoadResearch(ResearchPath);
-        LoadPrices(PricesPath);
     }
 
     public void LoadResearch(string filePath)
@@ -149,6 +149,8 @@ public class MainWindowVm : INotifyPropertyChanged
 
     public void FillUniqueParameters()
     {
+        UniqueParameters.Clear();
+
         foreach (var pair in _indicatorsCount)
         {
             // Проверяем, существует ли цена для данного показателя
@@ -166,13 +168,10 @@ public class MainWindowVm : INotifyPropertyChanged
         }
     }
 
-    protected void NotifyPropertyChanged([CallerMemberName] string? name = null)
+    public void CalculateCost()
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
+        AnalysisData.Clear();
 
-    internal void CalculateCost()
-    {
         foreach (var pair in _analysisIndicatorsMap)
         {
             string analysisName = pair.Key; // Название исследования
@@ -222,5 +221,10 @@ public class MainWindowVm : INotifyPropertyChanged
         }
 
         //MessageBox.Show("Стоимость рассчитана.");
+    }
+
+    protected void NotifyPropertyChanged([CallerMemberName] string? name = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }
