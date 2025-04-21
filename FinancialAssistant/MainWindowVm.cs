@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using NPOI.HSSF.UserModel;
+using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
@@ -17,6 +18,9 @@ public class MainWindowVm : INotifyPropertyChanged
 
     private string _researchPath;
     private string _analysisPath;
+    private double _totalExpend;
+    private double _totalCostWV;
+    private double _totalCostVAT;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -42,6 +46,36 @@ public class MainWindowVm : INotifyPropertyChanged
         set
         {
             _analysisPath = value;
+            NotifyPropertyChanged();
+        }
+    }
+
+    public double TotalExpend
+    {
+        get => _totalExpend;
+        set
+        {
+            _totalExpend = value;
+            NotifyPropertyChanged();
+        }
+    }
+
+    public double TotalCostWV
+    {
+        get => _totalCostWV;
+        set
+        {
+            _totalCostWV = value;
+            NotifyPropertyChanged();
+        }
+    }
+
+    public double TotalCostVAT
+    {
+        get => _totalCostVAT;
+        set
+        {
+            _totalCostVAT = value;
             NotifyPropertyChanged();
         }
     }
@@ -221,6 +255,26 @@ public class MainWindowVm : INotifyPropertyChanged
         }
 
         //MessageBox.Show("Стоимость рассчитана.");
+    }
+
+    public void TotalCalculate()
+    {
+        //var analysisCost = 
+        //double totalSum = 0;
+
+        //foreach (var analysisCost in )
+        //{
+        //double eachCost = ;
+        //totalSum += eachCost;
+        //}
+        TotalExpend = 0;
+        TotalCostWV = 0;
+        foreach(var analysis in AnalysisData)
+        {
+            TotalExpend += analysis.Expend;
+            TotalCostWV += analysis.Cost;
+        }
+        TotalCostVAT = TotalCostWV * 1.2;
     }
 
     protected void NotifyPropertyChanged([CallerMemberName] string? name = null)

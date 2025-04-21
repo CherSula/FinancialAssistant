@@ -58,16 +58,7 @@ namespace FinancialAssistant
 
         private void btnTotalSumForOrder_Click(object sender, RoutedEventArgs e)
         {
-            //var analysisCost = 
-            //double totalSum = 0;
-
-            //foreach (var analysisCost in )
-            //{
-            //double eachCost = ;
-            //totalSum += eachCost;
-            //}
-
-            //MessageBox.Show($"Итоговая стоимость заказа - '{totalSum} рублей без НДС'");
+            _vm.TotalCalculate();
         }
     }
 }
