@@ -6,10 +6,10 @@
         xmlns:local="clr-namespace:FinancialAssistant"
         mc:Ignorable="d"
         Title="Financial Assistant"
-        Height="500"
+        Height="550"
         Width="700"
         Loaded="Window_Loaded"
-        d:DataContext="{d:DesignInstance local:MainWindowVm}" Icon="/icon.png"
+        d:DataContext="{d:DesignInstance local:MainWindowVm}" Icon="/icon.png" MinWidth="700" MinHeight="550"
 >
     <Grid x:Name="mainWindow">
         <Grid.RowDefinitions>
@@ -168,7 +168,7 @@
         <StackPanel 
             Margin="10,156,0,0" 
             Grid.Row="2" 
-            VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="2"
+            VerticalAlignment="Bottom" Grid.ColumnSpan="2" Grid.RowSpan="2"
         >
             <Button
                 x:Name="btnTotal"
@@ -176,45 +176,45 @@
                 HorizontalAlignment="Left"
                 Margin="0,10,0,0"
                 Grid.Row="3"
-                VerticalAlignment="Top"
+                VerticalAlignment="Bottom"
                 Width="170"
                 Height="20"
                 Click="btnTotalSumForOrder_Click"/>
-            <StackPanel Orientation="Horizontal" Width="555" HorizontalAlignment="Left" >
+            <StackPanel Orientation="Horizontal" Width="555" HorizontalAlignment="Left" VerticalAlignment="Bottom" >
                 <Label 
                     Content="Расходы: "
                     Width="120" 
                     Height="20" 
-                    Padding="0,0,0,0"/>
+                    Padding="10,0,0,0"/>
                 <Label 
                     Content="{Binding TotalExpend}"
                     Width="120" 
                     Height="20" 
-                    Padding="0,0,0,0"/>
+                    Padding="10,0,0,0"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Width="555" HorizontalAlignment="Left" >
+            <StackPanel Orientation="Horizontal" Width="555" HorizontalAlignment="Left" VerticalAlignment="Bottom" >
                 <Label 
                     Content="Стоимость без НДС: "
                     Width="120" 
                     Height="20" 
-                    Padding="0,0,0,0"/>
+                    Padding="10,0,0,0"/>
                 <Label 
                     Content="{Binding TotalCostWV}"
                     Width="120" 
                     Height="20" 
-                    Padding="0,0,0,0"/>
+                    Padding="10,0,0,0"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Width="555" HorizontalAlignment="Left">
+            <StackPanel Orientation="Horizontal" Width="555" HorizontalAlignment="Left" VerticalAlignment="Bottom">
                 <Label 
                     Content="Стоимость с НДС: "
                     Width="120" 
                     Height="20" 
-                    Padding="0,0,0,0"/>
+                    Padding="10,0,0,0"/>
                 <Label 
                     Content="{Binding TotalCostVAT}"
                     Width="120" 
                     Height="20" 
-                    Padding="0,0,0,0"/>
+                    Padding="10,0,0,0"/>
             </StackPanel>
         </StackPanel>
         <Button
