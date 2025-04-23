@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
+using NPOI.HSSF.Record;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
@@ -158,25 +159,63 @@ public class MainWindowVm : INotifyPropertyChanged
         using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
         {
             workbook = Path.GetExtension(filePath) == ".xls" ? (IWorkbook)new HSSFWorkbook(file) : new XSSFWorkbook(file);
-
             var sheet = workbook.GetSheetAt(0); // Предполагаем, что данные на первом листе
 
             for (int row = 1; row <= sheet.LastRowNum; row++) // Пропускаем заголовок
             {
                 var nameCell = sheet.GetRow(row)?.GetCell(0); // Столбец A
-                var priceCellFinal = sheet.GetRow(row)?.GetCell(1); // Столбец D !!!!!!!!!!
+                var priceWithoutVAT = sheet.GetRow(row)?.GetCell(1); // Столбец B
+                var priceWithVAT = sheet.GetRow(row)?.GetCell(2); // Столбец C
 
-
-                if (nameCell != null && priceCellFinal != null)
+                if (nameCell is null || priceWithVAT is null)
                 {
-                    string indicatorName = nameCell.ToString();
-                    double priceFinal;
+                    continue;
+                }
 
-                    if (double.TryParse(priceCellFinal.ToString(), out priceFinal))
+                string? parameterName = nameCell.CellType == CellType.String ? nameCell.StringCellValue : nameCell.ToString();
+
+                if (string.IsNullOrWhiteSpace(parameterName))
+                {
+                    continue;
+                }
+
+                double priceFinal = 0;
+
+                // Обработка ячейки с ценой
+                if (priceWithVAT.CellType == CellType.Numeric)
+                {
+                    priceFinal = priceWithVAT.NumericCellValue; // Получаем числовое значение
+                }
+                //else if (priceWithVAT.CellType == CellType.String)
+                //{
+                //    if (!double.TryParse(priceWithVAT.StringCellValue, out priceFinal))
+                //    {
+                //        continue; // Если не удалось распарсить строку в число
+                //    }
+                //}
+                else if (priceWithVAT.CellType == CellType.Formula)
+                {
+                    // Обработка формулы
+                    var evaluator = workbook.GetCreationHelper().CreateFormulaEvaluator();
+                    var evalResult = evaluator.Evaluate(priceWithVAT);
+
+                    if (evalResult != null && evalResult.CellType == CellType.Numeric)
                     {
-                        _indicatorsPrices[indicatorName] = priceFinal;
+                        priceFinal = evalResult.NumberValue;
+                    }
+                    else
+                    {
+                        continue; // Если не удалось получить числовое значение из формулы
                     }
                 }
+
+                // Если цена без НДС указана, умножаем на 1.2 для получения цены с НДС
+                //if (priceWithoutVAT != null && priceWithoutVAT.CellType == CellType.Numeric)
+                //{
+                //    priceFinal = priceWithoutVAT.NumericCellValue * 1.2;
+                //}
+
+                _indicatorsPrices[parameterName] = priceFinal;
             }
         }
     }
@@ -276,6 +315,42 @@ public class MainWindowVm : INotifyPropertyChanged
         }
         TotalCostVAT = TotalCostWV * 1.2;
     }
+
+    //static void ExportDataToExcel(string[] args)
+    //{
+    //    // Создаем новый рабочий файл Excel
+    //    IWorkbook workbook = new XSSFWorkbook(); // Используйте HSSFWorkbook для .xls
+    //    ISheet sheetParameters = workbook.CreateSheet("По параметрам");
+    //    ISheet sheetAnalysis = workbook.CreateSheet("По исследованиям");
+    //    ISheet sheetTotal = workbook.CreateSheet("Итого");
+
+    //    // Пример данных для записи
+    //    var data = new List<string[]>
+    //    {
+    //        new string[] { "Имя", "Возраст", "Город" },
+    //        new string[] { "Алексей", "30", "Москва" },
+    //        new string[] { "Мария", "25", "Санкт-Петербург" },
+    //        new string[] { "Иван", "35", "Екатеринбург" }
+    //    };
+
+    //    // Записываем данные в ячейки
+    //    for (int rowIndex = 0; rowIndex < data.Count; rowIndex++)
+    //    {
+    //        IRow row = sheetParameters.CreateRow(rowIndex);
+    //        for (int colIndex = 0; colIndex < data[rowIndex].Length; colIndex++)
+    //        {
+    //            row.CreateCell(colIndex).SetCellValue(data[rowIndex][colIndex]);
+    //        }
+    //    }
+
+    //    // Сохраняем файл на диск
+    //    using (var fileData = new FileStream("ExportedData.xlsx", FileMode.Create))
+    //    {
+    //        workbook.Write(fileData);
+    //    }
+
+    //    Console.WriteLine("Данные успешно экспортированы в ExportedData.xlsx");
+    //}
 
     protected void NotifyPropertyChanged([CallerMemberName] string? name = null)
     {

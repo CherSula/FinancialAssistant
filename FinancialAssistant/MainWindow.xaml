@@ -51,7 +51,7 @@
                     Margin="0,10,0,0"/>
             </StackPanel>
         </StackPanel>
-        <Image x:Name="Logo" Grid.Row="0" Grid.Column="1" Width="80" HorizontalAlignment="Center" Margin="0,0,0,0" Source="/3logo.png" Grid.RowSpan="1" Height="80"/>
+        <Image x:Name="Logo" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,0" Source="/3logo.png" Grid.RowSpan="1"/>
         <Button 
             x:Name="btnCalculateParameters"
             Grid.Row="1" 
@@ -211,6 +211,16 @@
                     Padding="0,0,0,0"/>
             </StackPanel>
         </StackPanel>
+        <Button
+            x:Name="btnExportDataToExcel"
+            Grid.Column="1"
+            Content="Выгрузить в excel"
+            HorizontalAlignment="Right"
+            Margin="0,10,10,0"
+            Grid.Row="3"
+            VerticalAlignment="Top"
+            Width="125"
+            Click="btnExportDataToExcel_Click"/>
 
     </Grid>
 </Window>

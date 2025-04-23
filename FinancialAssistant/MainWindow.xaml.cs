@@ -60,5 +60,10 @@ namespace FinancialAssistant
         {
             _vm.TotalCalculate();
         }
+
+        private void btnExportDataToExcel_Click(object sender, RoutedEventArgs e)
+        {
+            //_vm.ExportDataToExcel();
+        }
     }
 }
