@@ -9,7 +9,7 @@
         Height="500"
         Width="700"
         Loaded="Window_Loaded"
-        d:DataContext="{d:DesignInstance local:MainWindowVm}"
+        d:DataContext="{d:DesignInstance local:MainWindowVm}" Icon="/icon.png"
 >
     <Grid x:Name="mainWindow">
         <Grid.RowDefinitions>
@@ -19,10 +19,11 @@
             <RowDefinition Height="60*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*"></ColumnDefinition>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="391*"></ColumnDefinition>
+            <ColumnDefinition Width="169*"/>
+            <ColumnDefinition Width="140*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Margin="0,0,0,0" Grid.RowSpan="1" VerticalAlignment="Top">
+        <StackPanel VerticalAlignment="Center" Grid.ColumnSpan="2">
             <StackPanel Orientation="Horizontal" Width="555" HorizontalAlignment="Left" Height="40" >
                 <Button 
                     x:Name="button1"
@@ -51,7 +52,7 @@
                     Margin="0,10,0,0"/>
             </StackPanel>
         </StackPanel>
-        <Image x:Name="Logo" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,0" Source="/3logo.png" Grid.RowSpan="1"/>
+        <Image x:Name="Logo" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" Source="/3logo.png" Grid.RowSpan="1"/>
         <Button 
             x:Name="btnCalculateParameters"
             Grid.Row="1" 
@@ -68,7 +69,7 @@
             AutoGenerateColumns="False"
             Grid.Row="1"
             Margin="10,35,10,0"
-            Grid.ColumnSpan="2"
+            Grid.ColumnSpan="3"
         >
             <DataGrid.Columns>
                 <DataGridTextColumn 
@@ -128,7 +129,7 @@
             ItemsSource="{Binding AnalysisData}"
             AutoGenerateColumns="False"
             Grid.Row="2"
-            Grid.ColumnSpan="2"
+            Grid.ColumnSpan="3"
             Margin="10,35,10,10"
         >
             <DataGrid.Columns>
@@ -165,9 +166,9 @@
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel 
-            Margin="10,0,0,0" 
-            Grid.Row="3" 
-            VerticalAlignment="Top"
+            Margin="10,156,0,0" 
+            Grid.Row="2" 
+            VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="2"
         >
             <Button
                 x:Name="btnTotal"
@@ -218,7 +219,7 @@
         </StackPanel>
         <Button
             x:Name="btnExportDataToExcel"
-            Grid.Column="1"
+            Grid.Column="2"
             Content="Выгрузить в excel"
             HorizontalAlignment="Right"
             Margin="0,10,10,0"
