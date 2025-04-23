@@ -63,18 +63,6 @@
             Width="170" 
             HorizontalContentAlignment="Center" 
             Click="btnShowUniqueIndicators_Click"/>
-        <Button 
-            x:Name="btnCalculateAnalysis" 
-            Grid.Row="2" 
-            Content="Рассчитать по исследованиям" 
-            HorizontalAlignment="Left" 
-            Margin="10,10,0,0" 
-            VerticalAlignment="Top" 
-            RenderTransformOrigin="0.487,0.536" 
-            Width="170" 
-            Height="20" 
-            Click="btnCalculateCost_Click"
-        />
         <DataGrid
             ItemsSource="{Binding UniqueParameters}"
             AutoGenerateColumns="False"
@@ -124,6 +112,18 @@
                 />
             </DataGrid.Columns>
         </DataGrid>
+        <Button 
+            x:Name="btnCalculateAnalysis" 
+            Grid.Row="2" 
+            Content="Рассчитать по исследованиям" 
+            HorizontalAlignment="Left" 
+            Margin="10,10,0,0" 
+            VerticalAlignment="Top" 
+            RenderTransformOrigin="0.487,0.536" 
+            Width="170" 
+            Height="20" 
+            Click="btnCalculateCost_Click"
+        />
         <DataGrid
             ItemsSource="{Binding AnalysisData}"
             AutoGenerateColumns="False"
@@ -150,6 +150,11 @@
                 <DataGridTextColumn
                     Header="Стоимость исследования для клиента" 
                     Binding="{Binding Cost}"
+                    IsReadOnly="True"
+                />
+                <DataGridTextColumn
+                    Header="Стоимость с НДС"
+                    Binding="{Binding CostWithVAT}"
                     IsReadOnly="True"
                 />
                 <DataGridTextColumn

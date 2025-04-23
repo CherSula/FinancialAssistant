@@ -63,7 +63,7 @@ namespace FinancialAssistant
 
         private void btnExportDataToExcel_Click(object sender, RoutedEventArgs e)
         {
-            //_vm.ExportDataToExcel();
+            _vm.ExportDataToExcel();
         }
     }
 }

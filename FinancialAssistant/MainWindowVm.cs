@@ -2,11 +2,16 @@
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Windows.Controls;
+using System.Windows.Media.Media3D;
+using System.Windows;
 using NPOI.HSSF.Record;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using Microsoft.Win32; // Не забудьте добавить этот using для работы с диалогом выбора папки
+
 
 namespace FinancialAssistant;
 
@@ -186,13 +191,6 @@ public class MainWindowVm : INotifyPropertyChanged
                 {
                     priceFinal = priceWithVAT.NumericCellValue; // Получаем числовое значение
                 }
-                //else if (priceWithVAT.CellType == CellType.String)
-                //{
-                //    if (!double.TryParse(priceWithVAT.StringCellValue, out priceFinal))
-                //    {
-                //        continue; // Если не удалось распарсить строку в число
-                //    }
-                //}
                 else if (priceWithVAT.CellType == CellType.Formula)
                 {
                     // Обработка формулы
@@ -208,13 +206,6 @@ public class MainWindowVm : INotifyPropertyChanged
                         continue; // Если не удалось получить числовое значение из формулы
                     }
                 }
-
-                // Если цена без НДС указана, умножаем на 1.2 для получения цены с НДС
-                //if (priceWithoutVAT != null && priceWithoutVAT.CellType == CellType.Numeric)
-                //{
-                //    priceFinal = priceWithoutVAT.NumericCellValue * 1.2;
-                //}
-
                 _indicatorsPrices[parameterName] = priceFinal;
             }
         }
@@ -279,6 +270,7 @@ public class MainWindowVm : INotifyPropertyChanged
                 totalCost += parameter.EachCost;
             }
 
+            double totalCostWithVAT = totalCost * 1.2;
             double totalMargin = totalCost - totalExpend;
 
             AnalysisData.Add(
@@ -288,12 +280,13 @@ public class MainWindowVm : INotifyPropertyChanged
                     Parameters = string.Join(Environment.NewLine, parametersNames),
                     Expend = totalExpend,
                     Cost = totalCost,
+                    //CostWithVAT = totalCostWithVAT,
                     Margin = totalMargin
                 }
             );
         }
 
-        //MessageBox.Show("Стоимость рассчитана.");
+        MessageBox.Show("Стоимость рассчитана.");
     }
 
     public void TotalCalculate()
@@ -316,41 +309,78 @@ public class MainWindowVm : INotifyPropertyChanged
         TotalCostVAT = TotalCostWV * 1.2;
     }
 
-    //static void ExportDataToExcel(string[] args)
-    //{
-    //    // Создаем новый рабочий файл Excel
-    //    IWorkbook workbook = new XSSFWorkbook(); // Используйте HSSFWorkbook для .xls
-    //    ISheet sheetParameters = workbook.CreateSheet("По параметрам");
-    //    ISheet sheetAnalysis = workbook.CreateSheet("По исследованиям");
-    //    ISheet sheetTotal = workbook.CreateSheet("Итого");
+    public void ExportDataToExcel()
+    {
+        //// Открываем диалог выбора папки
+        //OpenFileDialog fileDialog = new OpenFileDialog();
 
-    //    // Пример данных для записи
-    //    var data = new List<string[]>
-    //    {
-    //        new string[] { "Имя", "Возраст", "Город" },
-    //        new string[] { "Алексей", "30", "Москва" },
-    //        new string[] { "Мария", "25", "Санкт-Петербург" },
-    //        new string[] { "Иван", "35", "Екатеринбург" }
-    //    };
+        //fileDialog.ShowDialog();
+            // Открываем диалог выбора файла (можно использовать для выбора места сохранения)
+        SaveFileDialog saveFileDialog = new SaveFileDialog
+        {
+            Filter = "Excel Files (*.xlsx)|*.xlsx",
+            Title = "Сохранить файл как"
+        };
 
-    //    // Записываем данные в ячейки
-    //    for (int rowIndex = 0; rowIndex < data.Count; rowIndex++)
-    //    {
-    //        IRow row = sheetParameters.CreateRow(rowIndex);
-    //        for (int colIndex = 0; colIndex < data[rowIndex].Length; colIndex++)
-    //        {
-    //            row.CreateCell(colIndex).SetCellValue(data[rowIndex][colIndex]);
-    //        }
-    //    }
+        if (saveFileDialog.ShowDialog() == true)
+        {
+            string filePath = saveFileDialog.FileName;
 
-    //    // Сохраняем файл на диск
-    //    using (var fileData = new FileStream("ExportedData.xlsx", FileMode.Create))
-    //    {
-    //        workbook.Write(fileData);
-    //    }
+            // Создаем новый Excel файл
+            IWorkbook workbook = new XSSFWorkbook();
 
-    //    Console.WriteLine("Данные успешно экспортированы в ExportedData.xlsx");
-    //}
+            // Создаем первый лист и заполняем его данными из UniqueParameters
+            ISheet sheet1 = workbook.CreateSheet("По параметрам");
+            CreateHeaderRow(sheet1, new[] { "Показатель", "Цена лаб/шт", "Количество", "Коэффициент", "Цена клиента/шт", "Расходы за показатель всего", "Цена для клиента всего", "Маржинальность" });
+
+            int rowIndex = 1;
+            foreach (var parameter in UniqueParameters)
+            {
+                IRow row = sheet1.CreateRow(rowIndex++);
+                row.CreateCell(0).SetCellValue(parameter.Name);
+                row.CreateCell(1).SetCellValue(parameter.EachExpend);
+                row.CreateCell(2).SetCellValue(parameter.Count);
+                row.CreateCell(3).SetCellValue(parameter.Coefficient);
+                row.CreateCell(3).SetCellValue(parameter.EachCost);
+                row.CreateCell(3).SetCellValue(parameter.TotalExpend);
+                row.CreateCell(3).SetCellValue(parameter.TotalCost);
+                row.CreateCell(3).SetCellValue(parameter.TotalMargin);
+            }
+
+            // Создаем второй лист и заполняем его данными из AnalysisData
+            ISheet sheet2 = workbook.CreateSheet("По исследованиям");
+            CreateHeaderRow(sheet2, new[] { "Исследование", "Параметры", "Расходы", "Стоимость исследования для клиента", "Маржинальность" });
+
+            rowIndex = 1;
+            foreach (var analysis in AnalysisData)
+            {
+                IRow row = sheet2.CreateRow(rowIndex++);
+                row.CreateCell(0).SetCellValue(analysis.Analysis);
+                row.CreateCell(1).SetCellValue(analysis.Parameters);
+                row.CreateCell(2).SetCellValue(analysis.Expend);
+                row.CreateCell(3).SetCellValue(analysis.Cost);
+                //row.CreateCell(3).SetCellValue(analysis.CostWithVAT);
+                row.CreateCell(4).SetCellValue(analysis.Margin);
+            }
+
+            // Сохраняем файл
+            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                workbook.Write(fileStream);
+            }
+
+            MessageBox.Show("Данные успешно экспортированы в Excel!", "Экспорт завершен", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
+    private void CreateHeaderRow(ISheet sheet, string[] headers)
+    {
+        IRow headerRow = sheet.CreateRow(0);
+        for (int i = 0; i < headers.Length; i++)
+        {
+            headerRow.CreateCell(i).SetCellValue(headers[i]);
+        }
+    }
 
     protected void NotifyPropertyChanged([CallerMemberName] string? name = null)
     {
