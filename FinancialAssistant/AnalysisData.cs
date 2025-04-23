@@ -7,5 +7,6 @@
         public double Expend { get; set; }
         public double Cost { get; set; }
         public double Margin { get; set; }
+        public double CostWithVAT { get; set; }
     }
 }

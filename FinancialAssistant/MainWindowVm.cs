@@ -280,7 +280,7 @@ public class MainWindowVm : INotifyPropertyChanged
                     Parameters = string.Join(Environment.NewLine, parametersNames),
                     Expend = totalExpend,
                     Cost = totalCost,
-                    //CostWithVAT = totalCostWithVAT,
+                    CostWithVAT = totalCostWithVAT,
                     Margin = totalMargin
                 }
             );
@@ -311,11 +311,6 @@ public class MainWindowVm : INotifyPropertyChanged
 
     public void ExportDataToExcel()
     {
-        //// Открываем диалог выбора папки
-        //OpenFileDialog fileDialog = new OpenFileDialog();
-
-        //fileDialog.ShowDialog();
-            // Открываем диалог выбора файла (можно использовать для выбора места сохранения)
         SaveFileDialog saveFileDialog = new SaveFileDialog
         {
             Filter = "Excel Files (*.xlsx)|*.xlsx",
@@ -341,15 +336,15 @@ public class MainWindowVm : INotifyPropertyChanged
                 row.CreateCell(1).SetCellValue(parameter.EachExpend);
                 row.CreateCell(2).SetCellValue(parameter.Count);
                 row.CreateCell(3).SetCellValue(parameter.Coefficient);
-                row.CreateCell(3).SetCellValue(parameter.EachCost);
-                row.CreateCell(3).SetCellValue(parameter.TotalExpend);
-                row.CreateCell(3).SetCellValue(parameter.TotalCost);
-                row.CreateCell(3).SetCellValue(parameter.TotalMargin);
+                row.CreateCell(4).SetCellValue(parameter.EachCost);
+                row.CreateCell(5).SetCellValue(parameter.TotalExpend);
+                row.CreateCell(6).SetCellValue(parameter.TotalCost);
+                row.CreateCell(7).SetCellValue(parameter.TotalMargin);
             }
 
             // Создаем второй лист и заполняем его данными из AnalysisData
             ISheet sheet2 = workbook.CreateSheet("По исследованиям");
-            CreateHeaderRow(sheet2, new[] { "Исследование", "Параметры", "Расходы", "Стоимость исследования для клиента", "Маржинальность" });
+            CreateHeaderRow(sheet2, new[] { "Исследование", "Параметры", "Расходы", "Стоимость исследования для клиента", "Стоимость с НДС", "Маржинальность" });
 
             rowIndex = 1;
             foreach (var analysis in AnalysisData)
@@ -359,8 +354,8 @@ public class MainWindowVm : INotifyPropertyChanged
                 row.CreateCell(1).SetCellValue(analysis.Parameters);
                 row.CreateCell(2).SetCellValue(analysis.Expend);
                 row.CreateCell(3).SetCellValue(analysis.Cost);
-                //row.CreateCell(3).SetCellValue(analysis.CostWithVAT);
-                row.CreateCell(4).SetCellValue(analysis.Margin);
+                row.CreateCell(4).SetCellValue(analysis.CostWithVAT);
+                row.CreateCell(5).SetCellValue(analysis.Margin);
             }
 
             // Сохраняем файл
