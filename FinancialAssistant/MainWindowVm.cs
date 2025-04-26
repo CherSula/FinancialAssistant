@@ -27,6 +27,7 @@ public class MainWindowVm : INotifyPropertyChanged
     private double _totalExpend;
     private double _totalCostWV;
     private double _totalCostVAT;
+    private string _statusBarText;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -34,6 +35,16 @@ public class MainWindowVm : INotifyPropertyChanged
     {
         AnalysisData = new ObservableCollection<AnalysisData>();        
         UniqueParameters = new ObservableCollection<ParameterData>();        
+    }
+
+    public string StatusBarText
+    {
+        get => _statusBarText;
+        set
+        {
+            _statusBarText = value;
+            NotifyPropertyChanged();
+        }
     }
 
     public string ResearchPath
@@ -109,6 +120,17 @@ public class MainWindowVm : INotifyPropertyChanged
 
     public void LoadResearch(string filePath)
     {
+        if (File.Exists(filePath) == false)
+        {
+            StatusBarText = "Файл с исследованиями не прикреплён";
+            return;
+        }
+        else
+        {
+            StatusBarText = "Файл с исследованиями загружен";
+        }
+
+
         IWorkbook workbook;
 
         using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
@@ -160,6 +182,16 @@ public class MainWindowVm : INotifyPropertyChanged
 
     public void LoadPrices(string filePath)
     {
+        if (File.Exists(filePath) == false)
+        {
+            StatusBarText = "Файл с ценами не прикреплён";
+            return;
+        }
+        else
+        {
+            StatusBarText = "Файл с ценами загружен";
+        }
+
         IWorkbook workbook;
         using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
         {
@@ -186,22 +218,16 @@ public class MainWindowVm : INotifyPropertyChanged
 
                 double priceFinal = 0;
 
-
+                // Обработка ячейки с ценой
                 if (nameCell is not null & priceWithVAT is null)
                 {
                     priceFinal = Math.Round((priceWithoutVAT.NumericCellValue * 1.2), 2);
-                }
-                
-                
-                // Обработка ячейки с ценой
-                
-                    
-                if (priceWithVAT.CellType == CellType.Numeric)
+                }        
+                else if (priceWithVAT.CellType == CellType.Numeric)
                 {
                     priceFinal = Math.Round(priceWithVAT.NumericCellValue, 2); // Получаем числовое значение
                 }
-
-                if (priceWithVAT.CellType == CellType.Formula)
+                else if (priceWithVAT.CellType == CellType.Formula)
                 {
                     // Обработка формулы
                     var evaluator = workbook.GetCreationHelper().CreateFormulaEvaluator();
@@ -216,6 +242,7 @@ public class MainWindowVm : INotifyPropertyChanged
                         continue; // Если не удалось получить числовое значение из формулы
                     }
                 }
+
                 _indicatorsPrices[parameterName] = priceFinal;
             }
         }
@@ -236,8 +263,7 @@ public class MainWindowVm : INotifyPropertyChanged
             }
             else
             {
-                // TODO заменить на Status = $"Цена для показателя '{pair.Key}' не найдена."
-                Console.WriteLine($"Цена для показателя '{pair.Key}' не найдена.");
+                StatusBarText = $"Цена для показателя '{pair.Key}' не найдена.";
             }
         }
     }
@@ -262,8 +288,7 @@ public class MainWindowVm : INotifyPropertyChanged
                 }
                 else
                 {
-                    // TODO заменить на Status = $"Цена для показателя '{parameterName}' не найдена.";
-                    //MessageBox.Show($"Цена для показателя '{parameterName}' не найдена.");
+                    StatusBarText = $"Цена для показателя '{parameterName}' не найдена.";
                 }
             }
 
@@ -273,7 +298,7 @@ public class MainWindowVm : INotifyPropertyChanged
 
                 if (parameter is null)
                 {
-                    //MessageBox.Show($"Цена для показателя '{parameterName}' не найдена.");
+                    StatusBarText = $"Цена для показателя '{parameterName}' не найдена.";
                     continue;
                 }
 
@@ -296,19 +321,11 @@ public class MainWindowVm : INotifyPropertyChanged
             );
         }
 
-        MessageBox.Show("Стоимость рассчитана.");
+        StatusBarText = "Стоимость рассчитана.";
     }
 
     public void TotalCalculate()
     {
-        //var analysisCost = 
-        //double totalSum = 0;
-
-        //foreach (var analysisCost in )
-        //{
-        //double eachCost = ;
-        //totalSum += eachCost;
-        //}
         TotalExpend = 0;
         TotalCostWV = 0;
         foreach(var analysis in AnalysisData)
@@ -373,7 +390,7 @@ public class MainWindowVm : INotifyPropertyChanged
             {
                 workbook.Write(fileStream);
             }
-
+            StatusBarText = "Данные успешно экспортированы";
             MessageBox.Show("Данные успешно экспортированы в Excel!", "Экспорт завершен", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
