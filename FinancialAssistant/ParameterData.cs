@@ -9,14 +9,14 @@ namespace FinancialAssistant
         public ParameterData(string name, double eachExpend, double count)
         {
             Name = name;
-            EachExpend = eachExpend; // Получаем цену за единицу
+            EachExpend = Math.Round(eachExpend, 2); // Получаем цену за единицу
             Count = count; // Количество показателя
              
             Coefficient = 1; // коэффициент по умолчанию
-            TotalExpend = eachExpend * count; // Расход за показатель
-            EachCost = eachExpend * Coefficient;
-            TotalCost = count * Coefficient * eachExpend; // Расчет стоимости
-            TotalMargin = TotalCost - TotalExpend; // Маржинальность
+            TotalExpend = Math.Round(eachExpend * count, 2); // Расход за показатель
+            EachCost = Math.Round(eachExpend * Coefficient, 2);
+            TotalCost = Math.Round(count * Coefficient * eachExpend, 2); // Расчет стоимости
+            TotalMargin = Math.Round(TotalCost - TotalExpend, 2); // Маржинальность
         }
 
         public string Name { get; set; }
@@ -46,9 +46,9 @@ namespace FinancialAssistant
 
                 _coefficient = value;
 
-                EachCost = EachExpend * Coefficient;
-                TotalCost = Count * Coefficient * EachExpend;
-                TotalMargin = TotalCost - TotalExpend;
+                EachCost = Math.Round(EachExpend * Coefficient, 2);
+                TotalCost = Math.Round((Count * Coefficient * EachExpend), 2);
+                TotalMargin = Math.Round(TotalCost - TotalExpend, 2);
 
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Coefficient)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EachCost)));

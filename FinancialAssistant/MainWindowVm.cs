@@ -61,7 +61,7 @@ public class MainWindowVm : INotifyPropertyChanged
         get => _totalExpend;
         set
         {
-            _totalExpend = value;
+            _totalExpend = Math.Round(value, 2);
             NotifyPropertyChanged();
         }
     }
@@ -71,7 +71,7 @@ public class MainWindowVm : INotifyPropertyChanged
         get => _totalCostWV;
         set
         {
-            _totalCostWV = value;
+            _totalCostWV = Math.Round(value, 2);
             NotifyPropertyChanged();
         }
     }
@@ -81,7 +81,7 @@ public class MainWindowVm : INotifyPropertyChanged
         get => _totalCostVAT;
         set
         {
-            _totalCostVAT = value;
+            _totalCostVAT = Math.Round(value, 2);
             NotifyPropertyChanged();
         }
     }
@@ -186,12 +186,22 @@ public class MainWindowVm : INotifyPropertyChanged
 
                 double priceFinal = 0;
 
+
+                if (nameCell is not null & priceWithVAT is null)
+                {
+                    priceFinal = Math.Round((priceWithoutVAT.NumericCellValue * 1.2), 2);
+                }
+                
+                
                 // Обработка ячейки с ценой
+                
+                    
                 if (priceWithVAT.CellType == CellType.Numeric)
                 {
-                    priceFinal = priceWithVAT.NumericCellValue; // Получаем числовое значение
+                    priceFinal = Math.Round(priceWithVAT.NumericCellValue, 2); // Получаем числовое значение
                 }
-                else if (priceWithVAT.CellType == CellType.Formula)
+
+                if (priceWithVAT.CellType == CellType.Formula)
                 {
                     // Обработка формулы
                     var evaluator = workbook.GetCreationHelper().CreateFormulaEvaluator();
@@ -199,7 +209,7 @@ public class MainWindowVm : INotifyPropertyChanged
 
                     if (evalResult != null && evalResult.CellType == CellType.Numeric)
                     {
-                        priceFinal = evalResult.NumberValue;
+                        priceFinal = Math.Round(evalResult.NumberValue, 2);
                     }
                     else
                     {
@@ -248,7 +258,7 @@ public class MainWindowVm : INotifyPropertyChanged
             {
                 if (_indicatorsPrices.TryGetValue(parameterName, out var priceFinal))
                 {
-                    totalExpend += priceFinal;
+                    totalExpend += Math.Round(priceFinal, 2);
                 }
                 else
                 {
@@ -267,21 +277,21 @@ public class MainWindowVm : INotifyPropertyChanged
                     continue;
                 }
 
-                totalCost += parameter.EachCost;
+                totalCost += Math.Round(parameter.EachCost, 2);
             }
 
-            double totalCostWithVAT = totalCost * 1.2;
-            double totalMargin = totalCost - totalExpend;
+            double totalCostWithVAT = Math.Round((totalCost * 1.2), 2);
+            double totalMargin = Math.Round((totalCost - totalExpend), 2);
 
             AnalysisData.Add(
                 new AnalysisData
                 {
                     Analysis = analysisName,
                     Parameters = string.Join(Environment.NewLine, parametersNames),
-                    Expend = totalExpend,
-                    Cost = totalCost,
-                    CostWithVAT = totalCostWithVAT,
-                    Margin = totalMargin
+                    Expend = Math.Round(totalExpend, 2),
+                    Cost = Math.Round(totalCost, 2),
+                    CostWithVAT = Math.Round(totalCostWithVAT, 2),
+                    Margin = Math.Round(totalMargin, 2)
                 }
             );
         }
@@ -303,10 +313,10 @@ public class MainWindowVm : INotifyPropertyChanged
         TotalCostWV = 0;
         foreach(var analysis in AnalysisData)
         {
-            TotalExpend += analysis.Expend;
-            TotalCostWV += analysis.Cost;
+            TotalExpend += Math.Round(analysis.Expend, 2);
+            TotalCostWV += Math.Round(analysis.Cost, 2);
         }
-        TotalCostVAT = TotalCostWV * 1.2;
+        TotalCostVAT = Math.Round((TotalCostWV * 1.2), 2);
     }
 
     public void ExportDataToExcel()
