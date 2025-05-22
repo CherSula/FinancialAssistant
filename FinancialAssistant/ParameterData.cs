@@ -16,7 +16,7 @@ namespace FinancialAssistant
             TotalExpend = Math.Round(eachExpend * count, 2); // Расход за показатель
             EachCost = Math.Round(eachExpend * Coefficient, 2);
             TotalCost = Math.Round(count * Coefficient * eachExpend, 2); // Расчет стоимости
-            TotalMargin = Math.Round(TotalCost - TotalExpend, 2); // Маржинальность
+            TotalMargin = Math.Round(((TotalCost - TotalExpend) / TotalCost * 100), 2); // Маржинальность
         }
 
         public string Name { get; set; }
@@ -48,7 +48,7 @@ namespace FinancialAssistant
 
                 EachCost = Math.Round(EachExpend * Coefficient, 2);
                 TotalCost = Math.Round((Count * Coefficient * EachExpend), 2);
-                TotalMargin = Math.Round(TotalCost - TotalExpend, 2);
+                TotalMargin = Math.Round(((TotalCost - TotalExpend)/TotalCost * 100), 2);
 
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Coefficient)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EachCost)));
@@ -60,6 +60,8 @@ namespace FinancialAssistant
         public double TotalExpend { get; set; }
         public double TotalCost { get; set; }
         public double TotalMargin { get; set; }
+
+        public string VAT {  get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
     }

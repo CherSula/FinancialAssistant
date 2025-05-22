@@ -27,7 +27,9 @@ public class MainWindowVm : INotifyPropertyChanged
     private double _totalExpend;
     private double _totalCostWV;
     private double _totalCostVAT;
+    private double _totalMarginAll;
     private string _statusBarText;
+    private double _vat;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -87,12 +89,42 @@ public class MainWindowVm : INotifyPropertyChanged
         }
     }
 
+    public string VAT
+    {
+        get => _vat.ToString();
+        set
+        {
+            double converted;
+            if (Double.TryParse(value, out converted))
+            {
+                _vat = Math.Round(converted, 0);
+            }
+            else 
+            {
+                _vat = 0;
+            }
+
+            NotifyPropertyChanged();
+            CalculateCost();
+            TotalCalculate();
+        }
+    }
+
     public double TotalCostVAT
     {
         get => _totalCostVAT;
         set
         {
             _totalCostVAT = Math.Round(value, 2);
+            NotifyPropertyChanged();
+        }
+    }
+        public double TotalMarginAll
+    {
+        get => _totalMarginAll;
+        set
+        {
+            _totalMarginAll = Math.Round(value, 2);
             NotifyPropertyChanged();
         }
     }
@@ -305,8 +337,17 @@ public class MainWindowVm : INotifyPropertyChanged
                 totalCost += Math.Round(parameter.EachCost, 2);
             }
 
-            double totalCostWithVAT = Math.Round((totalCost * 1.2), 2);
-            double totalMargin = Math.Round((totalCost - totalExpend), 2);
+            double totalMargin = Math.Round(((totalCost - totalExpend)/totalCost * 100), 2);
+            double totalCostWithVAT;
+
+            if (_vat == 0)
+            {
+                totalCostWithVAT = Math.Round((totalCost * 1), 2);
+            }
+            else
+            {
+                totalCostWithVAT = Math.Round((totalCost + (totalCost / 100 * _vat)), 2);
+            }
 
             AnalysisData.Add(
                 new AnalysisData
@@ -328,12 +369,22 @@ public class MainWindowVm : INotifyPropertyChanged
     {
         TotalExpend = 0;
         TotalCostWV = 0;
-        foreach(var analysis in AnalysisData)
+        TotalMarginAll = 0;
+        foreach (var analysis in AnalysisData)
         {
             TotalExpend += Math.Round(analysis.Expend, 2);
             TotalCostWV += Math.Round(analysis.Cost, 2);
         }
-        TotalCostVAT = Math.Round((TotalCostWV * 1.2), 2);
+
+        if (_vat == 0)
+        {
+            TotalCostVAT = Math.Round((TotalCostWV * 1), 2);
+        }
+        else
+        {
+            TotalCostVAT = Math.Round((TotalCostWV + (TotalCostWV / 100 * _vat)), 2);
+        }
+            TotalMarginAll = Math.Round(((TotalCostWV - TotalExpend) / TotalCostWV * 100), 2);
     }
 
     public void ExportDataToExcel()
